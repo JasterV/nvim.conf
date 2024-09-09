@@ -17,6 +17,7 @@ return {
         "sql",
         "heex",
         "elixir",
+        "eex",
       },
     },
     config = function(_, opts)
