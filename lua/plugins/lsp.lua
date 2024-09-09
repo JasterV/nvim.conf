@@ -1,9 +1,3 @@
-local lexical = {
-  filetypes = { "elixir", "eelixir", "heex", "surface" },
-  cmd = { "/Users/victormartinez/Documents/lexical/_build/dev/package/lexical/bin/start_lexical.sh" },
-  settings = {},
-}
-
 return {
   -- tools
   {
@@ -33,35 +27,41 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        lexical = {
-          mason = false,
-          filetypes = lexical.filetypes,
-          on_attach = function()
-            print("Lexical has started.")
-          end,
-          settings = lexical.settings,
-        },
         tailwindcss = {
           filetypes_include = { "heex", "elixir" },
         },
       },
-      setup = {
-        lexical = function(_, _)
-          local lspconfig = require("lspconfig")
-          local configs = require("lspconfig.configs")
-          configs.lexical = {
-            default_config = {
-              filetypes = lexical.filetypes,
-              root_dir = function(fname)
-                print("finding root dir")
-                return lspconfig.util.root_pattern("mix.exs", ".git")(fname) or vim.loop.os_homedir()
-              end,
-              cmd = lexical.cmd,
-            },
-          }
-          return false
-        end,
-      },
+    },
+  },
+  {
+    "elixir-tools/elixir-tools.nvim",
+    version = "*",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local elixir = require("elixir")
+      local elixirls = require("elixir.elixirls")
+
+      elixir.setup({
+        nextls = { enable = true },
+        elixirls = {
+          enable = true,
+          settings = elixirls.settings({
+            dialyzerEnabled = false,
+            enableTestLenses = false,
+          }),
+          on_attach = function(client, bufnr)
+            vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
+            vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
+            vim.keymap.set("v", "<space>em", ":ElixirExpandMacro<cr>", { buffer = true, noremap = true })
+          end,
+        },
+        projectionist = {
+          enable = true,
+        },
+      })
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
     },
   },
 }
