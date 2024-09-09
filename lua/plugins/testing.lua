@@ -15,4 +15,15 @@ return {
       ]])
     end,
   },
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "jfpedroza/neotest-elixir",
+    },
+    opts = {
+      adapters = {
+        ["neotest-elixir"] = {},
+      },
+    },
+  },
 }
